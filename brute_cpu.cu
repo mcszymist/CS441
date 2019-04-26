@@ -106,12 +106,12 @@ int main()
   char *dev_possibleKey;
   int *dev_md5Target;
   char possibleKey[7];  // Will be auto-generated AAAAAA to ZZZZZZ
-  uint8_t length = 6;
+  uint32_t length = 6;
   cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
   cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
   cudaMalloc((void **) &dev_length, sizeof(uint8_t));
   cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_length, length, sizeof(uint8_t),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_length, length, sizeof(uint32_t),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_possibleKey,possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
   
   crack<<<26,26>>>(dev_possibleKey, dev_length, dev_md5Target);
