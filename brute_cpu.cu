@@ -54,28 +54,28 @@ int stringToInt(char *s)
 	power++;
   } 
   return sum;
-}
+};
 
 __global__ void crack(char* possibleKey, uint8_t* length, uint32_t *hashResult1, uint32_t *hashResult2, uint32_t *hashResult3, uint32_t *hashResult4, int* md5Target){
-	for (int i = 0; i < 26*26*26*26; i++)
-  {
-	intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
-	md5Hash(possibleKey, (*length), hashResult1, hashResult2, hashResult3, hashResult4);
-	if ((hashResult1 == md5Target[0]) &&
-            (hashResult2 == md5Target[1]) &&
-            (hashResult3 == md5Target[2]) &&
-            (hashResult4 == md5Target[3]))
-	{
-		printf("CRACKED! The original string is: %s\n", possibleKey);
-		return;
-	}	
-	// Comment out the below if you don't want to
-	// Occasionally print a message so we know it hasn't locked up
-	if (i % 250000 == 0)
-	{
-		printf("Guess #%d was %s\n", i, possibleKey);
+	for (int i = 0; i < 26*26*26*26; i++){
+		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
+		md5Hash((unsigned char*) possibleKey, (*length), hashResult1, hashResult2, hashResult3, hashResult4);
+		if ((*hashResult1 == md5Target[0]) &&
+				(*hashResult2 == md5Target[1]) &&
+				(*hashResult3 == md5Target[2]) &&
+				(*hashResult4 == md5Target[3]))
+		{
+			printf("CRACKED! The original string is: %s\n", possibleKey);
+			return;
+		}	
+		// Comment out the below if you don't want to
+		// Occasionally print a message so we know it hasn't locked up
+		if (i % 250000 == 0)
+		{
+			printf("Guess #%d was %s\n", i, possibleKey);
+		}
 	}
-}
+};
 // Brute force search over the space of numbers 0 - 26^6, mapped to all 6 char 
 // uppercase strings. The resulting string is hashed using md5 and compared
 // to the target hash to see if it is the same. If so, we just cracked the
