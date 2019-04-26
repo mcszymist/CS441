@@ -56,7 +56,8 @@ int stringToInt(char *s)
   return sum;
 };
 
-__global__ void crack(char* possibleKey, uint8_t* length, uint32_t *hashResult1, uint32_t *hashResult2, uint32_t *hashResult3, uint32_t *hashResult4, int* md5Target){
+__global__ void crack(char* possibleKey, uint8_t* length, int* md5Target){
+	uint32_t hashResult1, hashResult2, hashResult3, hashResult4;
 	for (int i = 0; i < 26*26*26*26; i++){
 		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
 		md5Hash((unsigned char*) possibleKey, (*length), hashResult1, hashResult2, hashResult3, hashResult4);
@@ -103,20 +104,11 @@ int main()
   // target
   int * dev_hashResult1,*dev_hashResult2,*dev_hashResult3,*dev_hashResult4,*dev_length,*dev_possibleKey,*dev_md5Target;
   char possibleKey[7];  // Will be auto-generated AAAAAA to ZZZZZZ
-  uint32_t hashResult1, hashResult2, hashResult3, hashResult4;
   uint8_t length = 6;
   cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
-  cudaMalloc((void **) &dev_hashResult1, sizeof(uint32_t));
-  cudaMalloc((void **) &dev_hashResult2, sizeof(uint32_t));
-  cudaMalloc((void **) &dev_hashResult3, sizeof(uint32_t));
-  cudaMalloc((void **) &dev_hashResult4, sizeof(uint32_t));
   cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
   cudaMalloc((void **) &dev_length, sizeof(uint8_t));
   cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_hashResult1, hashResult1, sizeof(uint32_t),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_hashResult2, hashResult2, sizeof(uint32_t),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_hashResult3, hashResult3, sizeof(uint32_t),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_hashResult4, hashResult4, sizeof(uint32_t),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_length, length, sizeof(uint8_t),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_possibleKey,possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
   
@@ -124,10 +116,6 @@ int main()
 		dev_hashResult1, dev_hashResult2, dev_hashResult3, dev_hashResult14);
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
   cudaFree(dev_md5Target);
-  cudaFree(dev_hashResult1);
-  cudaFree(dev_hashResult2);
-  cudaFree(dev_hashResult3);
-  cudaFree(dev_hashResult4);
   cudaFree(dev_length);
   cudaFree(dev_possibleKey);
   // Assume we don't know the key, try brute force cracker by
