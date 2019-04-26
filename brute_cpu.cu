@@ -56,7 +56,27 @@ int stringToInt(char *s)
   return sum;
 }
 
-
+__global__ void crack(unsigned char* possibleKey, uint8_t* length, uint32_t *hashResult1, uint32_t *hashResult2, uint32_t *hashResult3, uint32_t *hashResult4){
+	for (int i = 0; i < 26*26*26*26; i++)
+  {
+	intToString(blockId.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
+	md5Hash(possibleKey, length, 
+		&hashResult1, &hashResult2, &hashResult3, &hashResult4);
+	if ((hashResult1 == md5Target[0]) &&
+            (hashResult2 == md5Target[1]) &&
+            (hashResult3 == md5Target[2]) &&
+            (hashResult4 == md5Target[3]))
+	{
+		printf("CRACKED! The original string is: %s\n", possibleKey);
+		return;
+	}	
+	// Comment out the below if you don't want to
+	// Occasionally print a message so we know it hasn't locked up
+	if (i % 250000 == 0)
+	{
+		printf("Guess #%d was %s\n", i, possibleKey);
+	}
+}
 // Brute force search over the space of numbers 0 - 26^6, mapped to all 6 char 
 // uppercase strings. The resulting string is hashed using md5 and compared
 // to the target hash to see if it is the same. If so, we just cracked the
@@ -85,29 +105,32 @@ int main()
   char possibleKey[7];  // Will be auto-generated AAAAAA to ZZZZZZ
   uint32_t hashResult1, hashResult2, hashResult3, hashResult4;
   uint8_t length = 6;
-
+  cudaMalloc((void **) &dev_hashResult1, sizeof(uint32_t));
+  cudaMalloc((void **) &dev_hashResult2, sizeof(uint32_t));
+  cudaMalloc((void **) &dev_hashResult3, sizeof(uint32_t));
+  cudaMalloc((void **) &dev_hashResult4, sizeof(uint32_t));
+  cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
+  cudaMalloc((void **) &dev_length, sizeof(uint8_t));
+  cudaMemcpy(dev_hashResult1, hashResult1, sizeof(uint32_t),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_hashResult2, hashResult2, sizeof(uint32_t),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_hashResult3, hashResult3, sizeof(uint32_t),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_hashResult4, hashResult4, sizeof(uint32_t),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_length, length, sizeof(uint8_t),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_possibleKey, possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
+  
+	crack<<<26,26>>>(dev_possibleKey, dev_length, 
+		dev_hashResult1, dev_hashResult2, dev_hashResult3, dev_hashResult14);
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
+  
+  cudaFree(dev_hashResult1);
+  cudaFree(dev_hashResult2);
+  cudaFree(dev_hashResult3);
+  cudaFree(dev_hashResult4);
+  cudaFree(dev_length);
+  cudaFree(dev_possibleKey);
   // Assume we don't know the key, try brute force cracker by
   // hashing all 6 letter strings from AAAAAA to ZZZZZZ
-  for (int i = 0; i < 26*26*26*26*26*26; i++)
-  {
-	intToString(i, possibleKey); 
-	md5Hash((unsigned char *) possibleKey, length, 
-		&hashResult1, &hashResult2, &hashResult3, &hashResult4);
-	if ((hashResult1 == md5Target[0]) &&
-            (hashResult2 == md5Target[1]) &&
-            (hashResult3 == md5Target[2]) &&
-            (hashResult4 == md5Target[3]))
-	{
-		printf("CRACKED! The original string is: %s\n", possibleKey);
-		break;
-	}	
-	// Comment out the below if you don't want to
-	// Occasionally print a message so we know it hasn't locked up
-	if (i % 250000 == 0)
-	{
-		printf("Guess #%d was %s\n", i, possibleKey);
-	}
+  
  } 
 }
 
