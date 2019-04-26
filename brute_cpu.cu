@@ -57,7 +57,7 @@ int stringToInt(char *s)
 };
 
 __global__ void crack(char* possibleKey, uint8_t* length, int* md5Target){
-	uint32_t hashResult1, hashResult2, hashResult3, hashResult4;
+	uint32_t *hashResult1, *hashResult2, *hashResult3, *hashResult4;
 	for (int i = 0; i < 26*26*26*26; i++){
 		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
 		md5Hash((unsigned char*) possibleKey, (*length), hashResult1, hashResult2, hashResult3, hashResult4);
