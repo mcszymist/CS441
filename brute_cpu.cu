@@ -112,8 +112,7 @@ int main()
   cudaMemcpy(dev_length, length, sizeof(uint8_t),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_possibleKey,possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
   
-	crack<<<26,26>>>(dev_possibleKey, dev_length, 
-		dev_hashResult1, dev_hashResult2, dev_hashResult3, dev_hashResult14);
+  crack<<<26,26>>>(dev_possibleKey, dev_length, dev_md5Target);
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
   cudaFree(dev_md5Target);
   cudaFree(dev_length);
