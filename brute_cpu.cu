@@ -59,7 +59,7 @@ int stringToInt(char *s)
 __global__ void crack(unsigned char* possibleKey, uint8_t* length, uint32_t *hashResult1, uint32_t *hashResult2, uint32_t *hashResult3, uint32_t *hashResult4){
 	for (int i = 0; i < 26*26*26*26; i++)
   {
-	intToString(blockId.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
+	intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
 	md5Hash(possibleKey, length, 
 		&hashResult1, &hashResult2, &hashResult3, &hashResult4);
 	if ((hashResult1 == md5Target[0]) &&
@@ -116,7 +116,7 @@ int main()
   cudaMemcpy(dev_hashResult3, hashResult3, sizeof(uint32_t),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_hashResult4, hashResult4, sizeof(uint32_t),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_length, length, sizeof(uint8_t),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_possibleKey, possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_possibleKey,(unsigned char*) possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
   
 	crack<<<26,26>>>(dev_possibleKey, dev_length, 
 		dev_hashResult1, dev_hashResult2, dev_hashResult3, dev_hashResult14);
