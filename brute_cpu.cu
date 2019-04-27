@@ -111,7 +111,7 @@ int main()
   printf("Error: %s \n",cudaGetErrorName(cudaPeekAtLastError()));
 	printf("ErrorDes: %s \n",cudaGetErrorString(cudaGetLastError()));
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
-  cudaMemcpy(result,dev_result, 7*sizeof(char),cudaMemcpyDeviceToHost);
+   printf("%s \n",cudaGetErrorName(cudaMemcpy(result,dev_result, 7*sizeof(char),cudaMemcpyDeviceToHost)));
   printf("hopefully: %s \n",result);
   cudaFree(dev_md5Target);
   cudaFree(dev_result);
