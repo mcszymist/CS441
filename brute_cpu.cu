@@ -67,7 +67,7 @@ __global__ void crack(char* result, int* length, int* md5Target){
 				(*hashResult3 == md5Target[2]) &&
 				(*hashResult4 == md5Target[3]))
 		{
-			(*result) = possibleKey;
+			(*result) = (*possibleKey);
 			asm("trap;");
 			return;
 		}
@@ -115,7 +115,7 @@ int main()
   printf("hopefully: %s",result);
   cudaFree(dev_md5Target);
   cudaFree(dev_length);
-  cudaFree(dev_possibleKey);
+  cudaFree(dev_result);
   // Assume we don't know the key, try brute force cracker by
   // hashing all 6 letter strings from AAAAAA to ZZZZZZ
 }
