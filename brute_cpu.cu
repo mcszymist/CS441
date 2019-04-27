@@ -63,14 +63,7 @@ __global__ void crack(char* result, int* md5Target){
 	for (int i = 0; i < 26*26*26*26*26*26; i++){
 		intToString(i, possibleKey); 
 		md5Hash((unsigned char*) possibleKey, length, hashResult1, hashResult2, hashResult3, hashResult4);
-		if ((*hashResult1 == md5Target[0]) &&
-				(*hashResult2 == md5Target[1]) &&
-				(*hashResult3 == md5Target[2]) &&
-				(*hashResult4 == md5Target[3]))
-		{
-			//(*result) = (*possibleKey);
-			return;
-		}
+		
 	}
 };
 // Brute force search over the space of numbers 0 - 26^6, mapped to all 6 char 
