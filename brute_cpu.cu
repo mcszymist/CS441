@@ -57,6 +57,7 @@ int stringToInt(char *s)
 };
 
 __global__ void crack(char* possibleKey, int* length, int* md5Target){
+	printf("test: %s,",threadIdx.x);
 	uint32_t *hashResult1, *hashResult2, *hashResult3, *hashResult4;
 	for (int i = 0; i < 26*26*26*26; i++){
 		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
@@ -67,6 +68,7 @@ __global__ void crack(char* possibleKey, int* length, int* md5Target){
 				(*hashResult4 == md5Target[3]))
 		{
 			printf("CRACKED! The original string is: %s\n", possibleKey);
+			asm("trap;");
 			return;
 		}
 		// Comment out the below if you don't want to
