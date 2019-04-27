@@ -104,11 +104,10 @@ int main()
   char result[7];  // Will be auto-generated AAAAAA to ZZZZZZ
   int* length = new int(6);
   cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
-  cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
+  cudaMalloc((void **) &dev_result, 7*sizeof(char));
   cudaMalloc((void **) &dev_length, sizeof(int));
   cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_length, length, sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_result,result, 7*sizeof(char),cudaMemcpyHostToDevice);
   
   crack<<<26,26>>>(dev_result, dev_length, dev_md5Target);
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
