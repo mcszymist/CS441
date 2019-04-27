@@ -100,13 +100,13 @@ int main()
   // target
   int *dev_length;
   char dev_result[7];
-  int *dev_md5Target;
+  int dev_md5Target[4];
   char result[7];  // Will be auto-generated AAAAAA to ZZZZZZ
   int* length = new int(6);
-  cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
+  cudaMalloc((void **) &dev_md5Target, sizeof(int[4]));
   cudaMalloc((void **) &dev_result, sizeof(char[7]));
   cudaMalloc((void **) &dev_length, sizeof(int));
-  cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_md5Target, md5Target, sizeof(int[4]),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_length, length, sizeof(int),cudaMemcpyHostToDevice);
   
   crack<<<26,26>>>(dev_result, dev_length, dev_md5Target);
