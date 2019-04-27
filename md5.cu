@@ -64,7 +64,7 @@
  * __host__ this function can be called
  * from either the host or the device
  ***********************/
-__device__ __host__ void md5Hash(unsigned char* data, uint32_t length, uint32_t *a1, uint32_t *b1, uint32_t *c1, uint32_t *d1){
+__device__ __host__ void md5Hash(unsigned char* data, int length, uint32_t *a1, uint32_t *b1, uint32_t *c1, uint32_t *d1){
   const uint32_t a0 = 0x67452301;
   const uint32_t b0 = 0xEFCDAB89;
   const uint32_t c0 = 0x98BADCFE;

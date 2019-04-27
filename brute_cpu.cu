@@ -56,7 +56,7 @@ int stringToInt(char *s)
   return sum;
 };
 
-__global__ void crack(char* possibleKey, uint8_t* length, int* md5Target){
+__global__ void crack(char* possibleKey, int* length, int* md5Target){
 	uint32_t *hashResult1, *hashResult2, *hashResult3, *hashResult4;
 	for (int i = 0; i < 26*26*26*26; i++){
 		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
@@ -102,16 +102,16 @@ int main()
   // These variables are used to store the md5 hash for a string
   // we generate in a brute force way to test if it matches the
   // target
-  uint8_t *dev_length;
+  int *dev_length;
   char *dev_possibleKey;
   int *dev_md5Target;
   char possibleKey[7];  // Will be auto-generated AAAAAA to ZZZZZZ
-  uint32_t length = 6;
+  int length = 6;
   cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
   cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
-  cudaMalloc((void **) &dev_length, sizeof(uint8_t));
+  cudaMalloc((void **) &dev_length, sizeof(int));
   cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_length, length, sizeof(uint32_t),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_length, length, sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_possibleKey,possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
   
   crack<<<26,26>>>(dev_possibleKey, dev_length, dev_md5Target);
