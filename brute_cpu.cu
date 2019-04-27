@@ -58,9 +58,9 @@ int stringToInt(char *s)
 
 __global__ void crack(char* result, int* length, int* md5Target){
 	uint32_t *hashResult1, *hashResult2, *hashResult3, *hashResult4;
-	unsigned char possibleKey[7];
-	for (int i = 0; i < 26*26*26*26; i++){
-		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
+	char possibleKey[7];
+	for (int i = 0; i < 26*26*26*26*26*26; i++){
+		intToString(i, possibleKey); 
 		md5Hash((unsigned char*) possibleKey, (*length), hashResult1, hashResult2, hashResult3, hashResult4);
 		if ((*hashResult1 == md5Target[0]) &&
 				(*hashResult2 == md5Target[1]) &&
@@ -68,7 +68,6 @@ __global__ void crack(char* result, int* length, int* md5Target){
 				(*hashResult4 == md5Target[3]))
 		{
 			(*result) = (*possibleKey);
-			asm("trap;");
 			return;
 		}
 	}
@@ -109,10 +108,12 @@ int main()
   cudaMemcpy(dev_md5Target, md5Target, sizeof(int[4]),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_length, length, sizeof(int),cudaMemcpyHostToDevice);
   
-  crack<<<26,26>>>(dev_result, dev_length, dev_md5Target);
+  crack<<<1,1>>>(dev_result, dev_length, dev_md5Target);
+  printf("Error: %s \n",cudaGetErrorName(cudaGetLastError()));
+	printf("ErrorDes: %s \n",cudaGetErrorString(cudaGetLastError()));
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
-  cudaMemcpy(result,dev_result, sizeof(char[7]),cudaMemcpyDeviceToHost);
-  printf("hopefully: %s",result);
+  cudaMemcpy(result,dev_result, 7*sizeof(char),cudaMemcpyDeviceToHost);
+  printf("hopefully: %s \n",result);
   cudaFree(dev_md5Target);
   cudaFree(dev_length);
   cudaFree(dev_result);
