@@ -19,7 +19,7 @@
 // Convert a decimal number (starting at 0) to a corresponding 6 letter string
 // using base 26 to represent the string
 // s must be big enough to hold 6 chars plus a null (7 chars total)
-void intToString(int num, char *s)
+__device__ void intToString(int num, char *s)
 {
   int ones = (num) % 26;
   int twentySix = (num / 26) % 26;
@@ -106,12 +106,13 @@ int main()
   char *dev_possibleKey;
   int *dev_md5Target;
   char possibleKey[7];  // Will be auto-generated AAAAAA to ZZZZZZ
-  int length = 6;
+  int* length;
+  (*length) = 6;
   cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
   cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
   cudaMalloc((void **) &dev_length, sizeof(int));
   cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_length, (void *)length, sizeof(int),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_length, length, sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_possibleKey,possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
   
   crack<<<26,26>>>(dev_possibleKey, dev_length, dev_md5Target);
