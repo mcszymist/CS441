@@ -98,13 +98,13 @@ int main()
   // These variables are used to store the md5 hash for a string
   // we generate in a brute force way to test if it matches the
   // target
-  int *dev_length;
   char dev_result[7];
   int dev_md5Target[4];
-  char result[7];  // Will be auto-generated AAAAAA to ZZZZZZ
+  char *result = (char *) malloc(sizeof(char)*7);  // Will be auto-generated AAAAAA to ZZZZZZ
   cudaMalloc((void **) &dev_md5Target, sizeof(int[4]));
   cudaMalloc((void **) &dev_result, sizeof(char[7]));
   cudaMemcpy(dev_md5Target, md5Target, sizeof(int[4]),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_result,result,7*sizeof(char),cudaMemcpyHostToDevice);
   
   crack<<<1,1>>>(dev_result, dev_md5Target);
   printf("Error: %s \n",cudaGetErrorName(cudaGetLastError()));
