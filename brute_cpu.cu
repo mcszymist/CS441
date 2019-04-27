@@ -68,10 +68,10 @@ __global__ void crack(char* possibleKey, int* length, int* md5Target){
 		{
 			printf("CRACKED! The original string is: %s\n", possibleKey);
 			return;
-		}	
+		}
 		// Comment out the below if you don't want to
 		// Occasionally print a message so we know it hasn't locked up
-		if (i % 250000 == 0)
+		if (i % 1000 == 0)
 		{
 			printf("Guess #%d was %s\n", i, possibleKey);
 		}
