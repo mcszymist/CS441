@@ -121,7 +121,5 @@ int main()
   cudaFree(dev_possibleKey);
   // Assume we don't know the key, try brute force cracker by
   // hashing all 6 letter strings from AAAAAA to ZZZZZZ
-  
- } 
 }
 
