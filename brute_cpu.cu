@@ -102,10 +102,10 @@ int main()
   char *dev_result;
   int *dev_md5Target;
   char *result = (char *) malloc(sizeof(char)*7);  // Will be auto-generated AAAAAA to ZZZZZZ
-  cudaGetErrorName(cudaMalloc((void **) &dev_md5Target, 4*sizeof(int)));
-  cudaMalloc((void **) &dev_result, 7*sizeof(char));
-  cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_result,result,7*sizeof(char),cudaMemcpyHostToDevice);
+  printf("%s \n",cudaGetErrorName(cudaMalloc((void **) &dev_md5Target, 4*sizeof(int))));
+  printf("%s \n",cudaGetErrorName(cudaMalloc((void **) &dev_result, 7*sizeof(char))));
+  printf("%s \n",cudaGetErrorName(cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice)));
+  printf("%s \n",cudaGetErrorName(cudaMemcpy(dev_result,result,7*sizeof(char),cudaMemcpyHostToDevice)));
     
   crack<<<26,26>>>(dev_result, dev_md5Target);
   printf("Error: %s \n",cudaGetErrorName(cudaPeekAtLastError()));
