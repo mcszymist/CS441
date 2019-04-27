@@ -106,8 +106,7 @@ int main()
   char *dev_possibleKey;
   int *dev_md5Target;
   char possibleKey[7];  // Will be auto-generated AAAAAA to ZZZZZZ
-  int* length;
-  (*length) = 6;
+  int* length = new int(6);
   cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
   cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
   cudaMalloc((void **) &dev_length, sizeof(int));
