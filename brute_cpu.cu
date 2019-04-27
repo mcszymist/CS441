@@ -57,7 +57,6 @@ int stringToInt(char *s)
 };
 
 __global__ void crack(char* possibleKey, int* length, int* md5Target){
-	printf("test: %s,",threadIdx.x);
 	uint32_t *hashResult1, *hashResult2, *hashResult3, *hashResult4;
 	for (int i = 0; i < 26*26*26*26; i++){
 		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
@@ -67,15 +66,8 @@ __global__ void crack(char* possibleKey, int* length, int* md5Target){
 				(*hashResult3 == md5Target[2]) &&
 				(*hashResult4 == md5Target[3]))
 		{
-			printf("CRACKED! The original string is: %s\n", possibleKey);
 			asm("trap;");
 			return;
-		}
-		// Comment out the below if you don't want to
-		// Occasionally print a message so we know it hasn't locked up
-		if (i % 1000 == 0)
-		{
-			printf("Guess #%d was %s\n", i, possibleKey);
 		}
 	}
 };
@@ -118,6 +110,8 @@ int main()
   
   crack<<<26,26>>>(dev_possibleKey, dev_length, dev_md5Target);
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
+  cudaMemcpy(possibleKey,dev_possibleKey, 7*sizeof(char),cudaMemcpyDeviceToHost);
+  printf("hopefully: %s",possibleKey);
   cudaFree(dev_md5Target);
   cudaFree(dev_length);
   cudaFree(dev_possibleKey);
