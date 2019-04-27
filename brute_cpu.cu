@@ -61,7 +61,7 @@ __global__ void crack(char* result, int* length, int* md5Target){
 	unsigned char possibleKey[7];
 	for (int i = 0; i < 26*26*26*26; i++){
 		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
-		md5Hash(possibleKey, (*length), hashResult1, hashResult2, hashResult3, hashResult4);
+		md5Hash((unsigned char*) possibleKey, (*length), hashResult1, hashResult2, hashResult3, hashResult4);
 		if ((*hashResult1 == md5Target[0]) &&
 				(*hashResult2 == md5Target[1]) &&
 				(*hashResult3 == md5Target[2]) &&
