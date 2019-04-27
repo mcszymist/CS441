@@ -111,7 +111,7 @@ int main()
   cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
   cudaMalloc((void **) &dev_length, sizeof(int));
   cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_length, length, sizeof(int),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_length, (void *)length, sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_possibleKey,possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
   
   crack<<<26,26>>>(dev_possibleKey, dev_length, dev_md5Target);
