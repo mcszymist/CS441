@@ -57,6 +57,7 @@ int stringToInt(char *s)
 };
 
 __global__ void crack(char* result, int* md5Target){
+	result = (char*)"AAAAAA";
 	uint32_t *hashResult1, *hashResult2, *hashResult3, *hashResult4;
 	char possibleKey[7];
 	int length = 6;
@@ -68,7 +69,7 @@ __global__ void crack(char* result, int* md5Target){
 				(*hashResult3 == md5Target[2]) &&
 				(*hashResult4 == md5Target[3]))
 		{
-			(*result) = (*possibleKey);
+			//(*result) = (*possibleKey);
 			return;
 		}
 	}
@@ -98,16 +99,16 @@ int main()
   // These variables are used to store the md5 hash for a string
   // we generate in a brute force way to test if it matches the
   // target
-  char dev_result[7];
-  int dev_md5Target[4];
+  char *dev_result;
+  int *dev_md5Target;
   char *result = (char *) malloc(sizeof(char)*7);  // Will be auto-generated AAAAAA to ZZZZZZ
-  cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
+  cudaGetErrorName(cudaMalloc((void **) &dev_md5Target, 4*sizeof(int)));
   cudaMalloc((void **) &dev_result, 7*sizeof(char));
   cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_result,result,7*sizeof(char),cudaMemcpyHostToDevice);
     
   crack<<<26,26>>>(dev_result, dev_md5Target);
-  printf("Error: %s \n",cudaGetErrorName(cudaGetLastError()));
+  printf("Error: %s \n",cudaGetErrorName(cudaPeekAtLastError()));
 	printf("ErrorDes: %s \n",cudaGetErrorString(cudaGetLastError()));
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
   cudaMemcpy(result,dev_result, 7*sizeof(char),cudaMemcpyDeviceToHost);
@@ -117,4 +118,3 @@ int main()
   // Assume we don't know the key, try brute force cracker by
   // hashing all 6 letter strings from AAAAAA to ZZZZZZ
 }
-
