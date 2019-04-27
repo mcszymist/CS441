@@ -56,8 +56,9 @@ int stringToInt(char *s)
   return sum;
 };
 
-__global__ void crack(char* possibleKey, int* length, int* md5Target){
+__global__ void crack(char* result, int* length, int* md5Target){
 	uint32_t *hashResult1, *hashResult2, *hashResult3, *hashResult4;
+	char possibleKey[7];
 	for (int i = 0; i < 26*26*26*26; i++){
 		intToString(blockIdx.x*26*26*26*26*26 + threadIdx.x*26*26*26*26 + i, possibleKey); 
 		md5Hash((unsigned char*) possibleKey, (*length), hashResult1, hashResult2, hashResult3, hashResult4);
@@ -66,6 +67,7 @@ __global__ void crack(char* possibleKey, int* length, int* md5Target){
 				(*hashResult3 == md5Target[2]) &&
 				(*hashResult4 == md5Target[3]))
 		{
+			(*result) = possibleKey;
 			asm("trap;");
 			return;
 		}
@@ -97,21 +99,21 @@ int main()
   // we generate in a brute force way to test if it matches the
   // target
   int *dev_length;
-  char *dev_possibleKey;
+  char *dev_result;
   int *dev_md5Target;
-  char possibleKey[7];  // Will be auto-generated AAAAAA to ZZZZZZ
+  char result[7];  // Will be auto-generated AAAAAA to ZZZZZZ
   int* length = new int(6);
   cudaMalloc((void **) &dev_md5Target, 4*sizeof(int));
   cudaMalloc((void **) &dev_possibleKey, 7*sizeof(char));
   cudaMalloc((void **) &dev_length, sizeof(int));
   cudaMemcpy(dev_md5Target, md5Target, 4*sizeof(int),cudaMemcpyHostToDevice);
   cudaMemcpy(dev_length, length, sizeof(int),cudaMemcpyHostToDevice);
-  cudaMemcpy(dev_possibleKey,possibleKey, 7*sizeof(char),cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_result,result, 7*sizeof(char),cudaMemcpyHostToDevice);
   
-  crack<<<26,26>>>(dev_possibleKey, dev_length, dev_md5Target);
+  crack<<<26,26>>>(dev_result, dev_length, dev_md5Target);
   printf("Working on cracking the md5 key %s by trying all key combinations...\n",md5_hash_string);
-  cudaMemcpy(possibleKey,dev_possibleKey, 7*sizeof(char),cudaMemcpyDeviceToHost);
-  printf("hopefully: %s",possibleKey);
+  cudaMemcpy(result,dev_result, 7*sizeof(char),cudaMemcpyDeviceToHost);
+  printf("hopefully: %s",result);
   cudaFree(dev_md5Target);
   cudaFree(dev_length);
   cudaFree(dev_possibleKey);
