@@ -26,14 +26,14 @@
  // Convert a decimal number (starting at 0) to a corresponding 6 letter string
  // using base 26 to represent the string
  // s must be big enough to hold 6 chars plus a null (7 chars total)
-__device__ __host__ void intToString(int num, char *s)
+__device__ __host__ void intToString(const int num, char *s)
 {
-   int ones = (num) % 26;
-   int twentySix = (num / 26) % 26;
-   int twentySixSquared = (num / 26 / 26) % 26;
-   int twentySixCubed = (num / 26 / 26 / 26) % 26;
-   int twentySixFourth = (num / 26 / 26 / 26 / 26) % 26;
-   int twentySixFifth = (num / 26 / 26 / 26 / 26 / 26) % 26;
+   const int ones = (num) % 26;
+   const int twentySix = (num / 26) % 26;
+   const int twentySixSquared = (num / 26 / 26) % 26;
+   const int twentySixCubed = (num / 26 / 26 / 26) % 26;
+   const int twentySixFourth = (num / 26 / 26 / 26 / 26) % 26;
+   const int twentySixFifth = (num / 26 / 26 / 26 / 26 / 26) % 26;
    // Store appropriate char into the string
    int i = 0;
    s[i++] = twentySixFifth + 'A';
@@ -50,7 +50,7 @@ __device__ __host__ void intToString(int num, char *s)
  // using the intToString function above
 int stringToInt(char *s)
 {
-	int length = strlen(s);
+	const int length = strlen(s);
 	int sum = 0;
 	int power = 0;
 
@@ -115,7 +115,7 @@ int main(){
 	char possibleKey[7];// This is a bad duplicate.
 	intToString(result[0], possibleKey);
 
-	printf("The Key is!!: %s \n",possibleKey);
+	printf("The Key is: %s !\n",possibleKey);
 	
 	cudaFree(dev_md5Target);
 	cudaFree(dev_result);
