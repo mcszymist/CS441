@@ -1,8 +1,7 @@
-/*Samuel Grenon
+/*Tyler j Roberts
   CS441
   brute_cpu.cu
-  A MD5 crack with the use of the gpu
-  with the template provided by Dr. Mock
+  Template Made by Dr. Mock
 /*
 
 /***********************************************************************
